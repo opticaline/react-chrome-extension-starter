@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Build an Extension!",
   "permissions": [
-    "activeTab",
     "declarativeContent",
     "storage"
   ],
