@@ -10,11 +10,22 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
   },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src",
+        "public"
+      ],
+      "extensions": "js,jsx,css,html,json",
+      "quiet": false
+    }
+  },
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "watch": "npm-watch"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "npm-watch": "^0.6.0",
     "react-app-rewire-multiple-entry": "^2.2.0",
     "react-app-rewired": "^2.1.6"
   }
