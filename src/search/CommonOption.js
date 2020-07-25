@@ -83,7 +83,6 @@ class CommonOption extends React.Component {
 
     componentWillMount = () => {
         loadSearcher((searcher) => {
-            console.log(searcher)
             this.setState({ searcher });
         });
     }
