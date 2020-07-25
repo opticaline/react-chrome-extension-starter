@@ -1,24 +1,26 @@
 {
-  "name": "react-chrome-extension",
-  "version": "0.0.1",
-  "description": "Build an Extension!",
-  "permissions": [
-    "declarativeContent",
-    "storage"
-  ],
-  "background": {
-    "scripts": [
-      "background.js"
+    "name": "Quicker!",
+    "description": "Search the selected content on the specified website or find contain links.",
+    "version": "0.0.1",
+    "permissions": [
+        "contextMenus",
+        "declarativeContent",
+        "storage"
     ],
-    "persistent": false
-  },
-  "page_action": {
-    "default_popup": "popup.html"
-  },
-  "options_page": "index.html",
-  "icons": {
-    "192": "logo192.png",
-    "512": "logo512.png"
-  },
-  "manifest_version": 2
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "page_action": {
+        "default_popup": "popup.html"
+    },
+    "options_page": "index.html",
+    "icons": {
+        "16": "icon-16x16.png",
+        "48": "icon-48x48.png",
+        "128": "icon-128x128.png"
+    },
+    "manifest_version": 2
 }

@@ -1,0 +1,37 @@
+{
+    "search_website": {
+        "豆瓣": {
+            "电影": {
+                "link": "https://search.douban.com/movie/subject_search?search_text={word}"
+            },
+            "读书": {
+                "link": "https://search.douban.com/book/subject_search?search_text={word}"
+            },
+            "游戏": {
+                "link": "https://www.douban.com/game/explore/?genres=&platforms=&sort=rating&q={word}"
+            }
+        },
+        "影视资源": {
+            "字幕库": {
+                "link": "http://www.zimuku.la/search?q={word}"
+            },
+            "人人影视": {
+                "link": "http://www.rrys2020.com/search?keyword={word}"
+            }
+        },
+        "购物": {
+            "淘宝": {
+                "link": "https://s.taobao.com/search?q={word}"
+            },
+            "京东": {
+                "link": "https://search.jd.com/Search?keyword={word}"
+            },
+            "当当": {
+                "link": "http://search.dangdang.com/?key={word}"
+            },
+            "亚马逊": {
+                "link": "https://www.amazon.cn/dp/B015I4I79S/ref=sr_1_1?keywords={word}"
+            }
+        }
+    }
+}
