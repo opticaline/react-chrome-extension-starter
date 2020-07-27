@@ -4,8 +4,6 @@ const addSearcher = (groupName, name, info) => {
         register_searcher: {
             groupName: groupName, name: name, info: info
         }
-    }, function (response) {
-        console.log(response);
     });
 };
 
@@ -14,8 +12,6 @@ const delSearcher = (groupName, name) => {
         unregister_searcher: {
             groupName: groupName, name: name
         }
-    }, function (response) {
-        console.log(response);
     });
 };
 
@@ -25,4 +21,25 @@ const loadSearcher = (f) => {
     }, f);
 };
 
-export { addSearcher, delSearcher, loadSearcher };
+const loadCustom = (f) => {
+    chrome.runtime.sendMessage({
+        load_custom: {}
+    }, (values) => f(values.customSearchers || [], values.enabled || []));
+};
+
+const custom = {
+    create: function () {
+        chrome.runtime.sendMessage({ custom_create: arguments });
+    },
+    delete: function () {
+        chrome.runtime.sendMessage({ custom_delete: arguments });
+    },
+    enable: function () {
+        chrome.runtime.sendMessage({ custom_enable: arguments });
+    },
+    disable: function () {
+        chrome.runtime.sendMessage({ custom_disable: arguments });
+    },
+};
+
+export { addSearcher, delSearcher, loadSearcher, loadCustom, custom };

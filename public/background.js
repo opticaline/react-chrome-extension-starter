@@ -5,6 +5,7 @@ const services = {
             // add to storage
             chrome.storage.sync.set({ "searcher": coordinator });
         }
+        return false;
     },
     "unregister_searcher": function (args, sender, sendResponse) {
         if (Object.keys(args).length > 0) {
@@ -12,10 +13,59 @@ const services = {
             // del to storage
             chrome.storage.sync.set({ "searcher": coordinator });
         }
+        return false;
     },
     "load_searcher": function (args, sender, sendResponse) {
         sendResponse(coordinator);
-    }
+        return true;
+    },
+    "load_custom": function (args, sender, sendResponse) {
+        getCustom((values) => sendResponse(values));
+        return true;
+    },
+    "custom_create": function (args, sender, sendResponse) {
+        chrome.storage.sync.get("customSearchers", function (items) {
+            const temp = items.customSearchers || [];
+            temp.push(args[0]);
+            chrome.storage.sync.set({ "customSearchers": temp });
+        });
+        return false;
+    },
+    "custom_delete": function (args, sender, sendResponse) {
+        chrome.storage.sync.get("customSearchers", function (items) {
+            const temp = items.customSearchers || [];
+            for (let i = 0; i < temp.length; i++) {
+                const e = temp[i];
+                if (e.name === args[0]) {
+                    temp.splice(i, 1);
+                }
+            }
+            chrome.storage.sync.set({ "customSearchers": temp });
+        });
+        return false;
+    },
+    "custom_enable": function (args, sender, sendResponse) {
+        chrome.storage.sync.get("enabled", function (items) {
+            const temp = items.enabled || [];
+            args[0].forEach(name => {
+                temp.push(name);
+            });
+            chrome.storage.sync.set({ "enabled": temp });
+        });
+        return false;
+    },
+    "custom_disable": function (args, sender, sendResponse) {
+        chrome.storage.sync.get("enabled", function (items) {
+            const temp = items.enabled || [];
+            args[0].forEach(name => {
+                if (temp.indexOf(name) >= 0) {
+                    temp.splice(temp.indexOf(name), 1);
+                }
+            });
+            chrome.storage.sync.set({ "enabled": temp });
+        });
+        return false;
+    },
 };
 
 const coordinator = {};
@@ -25,10 +75,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (request.hasOwnProperty(key)) {
             if (key in services) {
                 const args = request[key];
-                services[key](args, sender, sendResponse);
-                return true;
+                return services[key](args, sender, sendResponse);
             } else {
-                sendResponse({ "error": "[Service not found] " + key });
+                console.error("Can't found service!", key);
             }
         }
     }
@@ -43,6 +92,12 @@ function openSearchWebsite(info, tab) {
 };
 
 chrome.contextMenus.onClicked.addListener(openSearchWebsite);
+
+function getCustom(callback) {
+    chrome.storage.sync.get(["enabled", "customSearchers"], function (items) {
+        callback(items);
+    });
+}
 
 function getRegisterdSearcher(callback) {
     chrome.storage.sync.get("searcher", function (items) {
