@@ -34,7 +34,6 @@ class CustomSearcher extends React.Component {
             selectedRowKeys: [...this.state.selectedRowKeys, values.name]
         })
         custom.create(values);
-        this.enable([values.name]);
         this.formRef.current.resetFields();
         message.success("创建成功");
     };
@@ -49,7 +48,6 @@ class CustomSearcher extends React.Component {
                 if (temp.indexOf(name) >= 0) {
                     temp.splice(temp.indexOf(name), 1);
                 }
-                this.disable([name]);
                 custom.delete(name);
                 this.setState({ data, selectedRowKeys: temp });
                 break;

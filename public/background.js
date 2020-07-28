@@ -16,7 +16,7 @@ const services = {
         return false;
     },
     "load_searcher": function (args, sender, sendResponse) {
-        sendResponse(coordinator);
+        getRegisterdSearcher((v) => sendResponse(v));
         return true;
     },
     "load_custom": function (args, sender, sendResponse) {
@@ -24,45 +24,42 @@ const services = {
         return true;
     },
     "custom_create": function (args, sender, sendResponse) {
-        chrome.storage.sync.get("customSearchers", function (items) {
-            const temp = items.customSearchers || [];
-            temp.push(args[0]);
-            chrome.storage.sync.set({ "customSearchers": temp });
+        chrome.storage.sync.get("custom", function (items) {
+            const temp = items.custom || {};
+            const form = args[0];
+            temp[form.name] = { enabled: true, ...form };
+            chrome.storage.sync.set({ "custom": temp });
         });
         return false;
     },
     "custom_delete": function (args, sender, sendResponse) {
-        chrome.storage.sync.get("customSearchers", function (items) {
-            const temp = items.customSearchers || [];
-            for (let i = 0; i < temp.length; i++) {
-                const e = temp[i];
-                if (e.name === args[0]) {
-                    temp.splice(i, 1);
-                }
-            }
-            chrome.storage.sync.set({ "customSearchers": temp });
+        chrome.storage.sync.get("custom", function (items) {
+            const temp = items.custom || {};
+            const name = args[0];
+            delete temp[name];
+            chrome.storage.sync.set({ "custom": temp });
         });
         return false;
     },
     "custom_enable": function (args, sender, sendResponse) {
-        chrome.storage.sync.get("enabled", function (items) {
-            const temp = items.enabled || [];
-            args[0].forEach(name => {
-                temp.push(name);
-            });
-            chrome.storage.sync.set({ "enabled": temp });
+        chrome.storage.sync.get("custom", function (items) {
+            const temp = items.custom || {};
+            const name = args[0];
+            if (name in temp) {
+                temp[name].enabled = true;
+                chrome.storage.sync.set({ "custom": temp });
+            }
         });
         return false;
     },
     "custom_disable": function (args, sender, sendResponse) {
-        chrome.storage.sync.get("enabled", function (items) {
-            const temp = items.enabled || [];
-            args[0].forEach(name => {
-                if (temp.indexOf(name) >= 0) {
-                    temp.splice(temp.indexOf(name), 1);
-                }
-            });
-            chrome.storage.sync.set({ "enabled": temp });
+        chrome.storage.sync.get("custom", function (items) {
+            const temp = items.custom || {};
+            const name = args[0];
+            if (name in temp) {
+                temp[name].enabled = false;
+                chrome.storage.sync.set({ "custom": temp });
+            }
         });
         return false;
     },
@@ -94,8 +91,12 @@ function openSearchWebsite(info, tab) {
 chrome.contextMenus.onClicked.addListener(openSearchWebsite);
 
 function getCustom(callback) {
-    chrome.storage.sync.get(["enabled", "customSearchers"], function (items) {
-        callback(items);
+    chrome.storage.sync.get("custom", function (items) {
+        const temp = items.custom || {};
+        callback({
+            customSearchers: Object.keys(temp).map((k) => { return { name: k, ...temp[k] } }),
+            enabled: Object.keys(temp).filter((k) => temp[k].enabled).map((k) => k),
+        });
     });
 }
 
@@ -151,4 +152,5 @@ chrome.runtime.onInstalled.addListener(function () {
             actions: [new chrome.declarativeContent.ShowPageAction()]
         }]);
     });
+    chrome.runtime.openOptionsPage();
 });
