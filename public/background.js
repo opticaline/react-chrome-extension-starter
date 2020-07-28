@@ -28,6 +28,7 @@ const services = {
             const temp = items.custom || {};
             const form = args[0];
             temp[form.name] = { enabled: true, ...form };
+            createMenuItem("Custom", form.name, form);
             chrome.storage.sync.set({ "custom": temp });
         });
         return false;
@@ -37,6 +38,7 @@ const services = {
             const temp = items.custom || {};
             const name = args[0];
             delete temp[name];
+            removeMenuItem("Custom", name);
             chrome.storage.sync.set({ "custom": temp });
         });
         return false;
@@ -44,22 +46,28 @@ const services = {
     "custom_enable": function (args, sender, sendResponse) {
         chrome.storage.sync.get("custom", function (items) {
             const temp = items.custom || {};
-            const name = args[0];
-            if (name in temp) {
-                temp[name].enabled = true;
-                chrome.storage.sync.set({ "custom": temp });
-            }
+            const names = args[0];
+            names.forEach(name => {
+                if (name in temp) {
+                    temp[name].enabled = true;
+                    createMenuItem("Custom", name, temp[name]);
+                }
+            });
+            chrome.storage.sync.set({ "custom": temp });
         });
         return false;
     },
     "custom_disable": function (args, sender, sendResponse) {
         chrome.storage.sync.get("custom", function (items) {
             const temp = items.custom || {};
-            const name = args[0];
-            if (name in temp) {
-                temp[name].enabled = false;
-                chrome.storage.sync.set({ "custom": temp });
-            }
+            const names = args[0];
+            names.forEach(name => {
+                if (name in temp) {
+                    temp[name].enabled = false;
+                    removeMenuItem("Custom", name);
+                    chrome.storage.sync.set({ "custom": temp });
+                }
+            });
         });
         return false;
     },
@@ -145,7 +153,14 @@ chrome.runtime.onInstalled.addListener(function () {
                 }
             }
         }
-    })
+    });
+    // get custom
+    chrome.storage.sync.get("custom", function (items) {
+        const temp = items.custom || {};
+        Object.keys(temp).filter((k) => temp[k].enabled).forEach((k) => {
+            createMenuItem("Custom", k, temp[k]);
+        });
+    });
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
         chrome.declarativeContent.onPageChanged.addRules([{
             conditions: [],
